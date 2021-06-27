@@ -2,3 +2,6 @@
 	path = Firmware/Private
 	url = git@github.com:madcowswe/ODrivePrivate.git
 	branch = submodule
+[submodule "Firmware/modules/uavcan"]
+	path = Firmware/modules/uavcan
+	url = https://github.com/ArduPilot/uavcan.git
