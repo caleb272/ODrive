@@ -194,6 +194,46 @@ freertos_pkg = {
     }
 }
 
+uavcan_pkg = {
+    root = 'modules/uavcan',
+    include_dirs = {
+        'libuavcan/include',
+        'libuavcan/include/dsdlc_generated'
+    },
+    code_files = {
+        -- /
+        'libuavcan/src/uc_data_type.cpp',
+        'libuavcan/src/uc_dynamic_memory.cpp',
+        'libuavcan/src/uc_error.cpp',
+        -- Node
+        'libuavcan/src/node/uc_generic_publisher.cpp',
+        'libuavcan/src/node/uc_global_data_type_registry.cpp',
+        'libuavcan/src/node/uc_service_client.cpp',
+        'libuavcan/src/node/uc_generic_subscriber.cpp',
+        'libuavcan/src/node/uc_scheduler.cpp',
+        'libuavcan/src/node/uc_timer.cpp',
+        -- Transport
+        'libuavcan/src/transport/uc_can_acceptance_filter_configurator.cpp',
+        'libuavcan/src/transport/uc_can_io.cpp',
+        'libuavcan/src/transport/uc_crc.cpp',
+        'libuavcan/src/transport/uc_dispatcher.cpp',
+        'libuavcan/src/transport/uc_frame.cpp',
+        'libuavcan/src/transport/uc_outgoing_transfer_registry.cpp',
+        'libuavcan/src/transport/uc_transfer_buffer.cpp',
+        'libuavcan/src/transport/uc_transfer.cpp',
+        'libuavcan/src/transport/uc_transfer_listener.cpp',
+        'libuavcan/src/transport/uc_transfer_receiver.cpp',
+        'libuavcan/src/transport/uc_transfer_sender.cpp',
+        -- Driver
+        'libuavcan/src/driver/uc_can.cpp',
+        -- Protocol
+        'libuavcan/src/protocol/uc_dynamic_node_id_client.cpp',
+        'libuavcan/src/protocol/uc_node_status_provider.cpp'
+
+    },
+    cflags = {'-DUAVCAN_CPP_VERSION=UAVCAN_CPP11'},
+}
+
 cmsis_pkg = {
     root = 'ThirdParty/CMSIS',
     include_dirs = {
@@ -423,6 +463,7 @@ add_pkg(cmsis_pkg)
 add_pkg(stm32_usb_device_library_pkg)
 add_pkg(board)
 add_pkg(fibre_pkg)
+add_pkg(uavcan_pkg)
 add_pkg(odrive_firmware_pkg)
 
 
