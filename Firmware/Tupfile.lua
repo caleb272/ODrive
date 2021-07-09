@@ -93,6 +93,7 @@ odrive_firmware_pkg = {
         'Drivers/STM32/stm32_nvm.c',
         'Drivers/STM32/stm32_spi_arbiter.cpp',
         'communication/can/can_simple.cpp',
+        'communication/can/can_uavcan.cpp',
         'communication/can/odrive_can.cpp',    
         'communication/communication.cpp',
         'communication/ascii_protocol.cpp',
@@ -234,6 +235,17 @@ uavcan_pkg = {
     cflags = {'-DUAVCAN_CPP_VERSION=UAVCAN_CPP11'},
 }
 
+uavcan_stm32_driver_pkg = {
+    root = 'modules/uavcan/libuavcan_drivers/stm32/driver',
+    include_dirs = { 'include' },
+    code_files = {
+        'src/uc_stm32_can.cpp',
+        'src/uc_stm32_clock.cpp',
+        'src/uc_stm32_thread.cpp'
+    },
+    cflags = { '-DUAVCAN_STM32_NUM_IFACES=1', '-DUAVCAN_STM32_FREERTOS=1', '-DUAVCAN_STM32_BAREMETAL=0', '-DUAVCAN_STM32_TIMER_NUMBER=2' }
+}
+
 cmsis_pkg = {
     root = 'ThirdParty/CMSIS',
     include_dirs = {
@@ -241,7 +253,7 @@ cmsis_pkg = {
         'Device/ST/STM32F7xx/Include',
         'Device/ST/STM32F4xx/Include'
     },
-    ldflags = {'-LThirdParty/CMSIS/Lib/GCC'},
+    ldflags = { '-LThirdParty/CMSIS/Lib/GCC' },
 }
 
 stm32_usb_device_library_pkg = {
@@ -463,8 +475,9 @@ add_pkg(cmsis_pkg)
 add_pkg(stm32_usb_device_library_pkg)
 add_pkg(board)
 add_pkg(fibre_pkg)
-add_pkg(uavcan_pkg)
 add_pkg(odrive_firmware_pkg)
+add_pkg(uavcan_stm32_driver_pkg)
+add_pkg(uavcan_pkg)
 
 
 for _, src_file in pairs(code_files) do

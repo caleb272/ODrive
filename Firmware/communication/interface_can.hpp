@@ -6,5 +6,6 @@
 //#include "can_helpers.hpp"
 //#include <communication/can/can_simple.hpp>
 //// Other protocol implementations here
+//#include <communication/can/can_uavcan.hpp>
 
 #endif

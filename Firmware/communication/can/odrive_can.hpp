@@ -5,6 +5,7 @@
 
 #include "canbus.hpp"
 #include "can_simple.hpp"
+#include "can_uavcan.hpp"
 #include <autogen/interfaces.hpp>
 
 #define CAN_CLK_HZ (42000000)
@@ -38,6 +39,7 @@ public:
 
     Config_t config_;
     CANSimple can_simple_{this};
+    CANUavcan can_uavcan_{this};
 
     osThreadId thread_id_;
     const uint32_t stack_size_ = 1024;  // Bytes
