@@ -46,8 +46,8 @@ void ODriveCAN::can_server_thread() {
     Protocol protocol = config_.protocol;
 
     if (protocol & PROTOCOL_SIMPLE) {
-        // can_simple_.init();
-        can_uavcan_.init();
+        can_simple_.init();
+        // can_uavcan_.init();
     }
 
     for (;;) {
@@ -55,12 +55,12 @@ void ODriveCAN::can_server_thread() {
         if (status == HAL_CAN_ERROR_NONE) {
             uint32_t next_service_time = UINT32_MAX;
 
-            // if (protocol & PROTOCOL_SIMPLE) {
-            //     next_service_time = std::min(can_simple_.service_stack(), next_service_time);
-            // }
             if (protocol & PROTOCOL_SIMPLE) {
-                next_service_time = std::min(can_uavcan_.service_stack(), next_service_time);
+                next_service_time = std::min(can_simple_.service_stack(), next_service_time);
             }
+            // if (protocol & PROTOCOL_SIMPLE) {
+            //     next_service_time = std::min(can_uavcan_.service_stack(), next_service_time);
+            // }
 
             process_rx_fifo(CAN_RX_FIFO0);
             process_rx_fifo(CAN_RX_FIFO1);

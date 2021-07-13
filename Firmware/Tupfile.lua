@@ -197,9 +197,13 @@ freertos_pkg = {
 
 uavcan_pkg = {
     root = 'modules/uavcan',
+    include = {stm32f4xx_hal_pkg, uavcan_stm32_driver_pkg},
     include_dirs = {
         'libuavcan/include',
-        'libuavcan/include/dsdlc_generated'
+        'libuavcan/include/dsdlc_generated',
+        'libuavcan/include/dsdlc_generated/uavcan',
+        'libuavcan/include/dsdlc_generated/root_ns_a',
+        'libuavcan/include/dsdlc_generated/root_ns_b',
     },
     code_files = {
         -- /
@@ -225,14 +229,22 @@ uavcan_pkg = {
         'libuavcan/src/transport/uc_transfer_listener.cpp',
         'libuavcan/src/transport/uc_transfer_receiver.cpp',
         'libuavcan/src/transport/uc_transfer_sender.cpp',
+        -- Marshal
+        'libuavcan/src/marshal/uc_bit_array_copy.cpp',
+        'libuavcan/src/marshal/uc_bit_stream.cpp',
+        'libuavcan/src/marshal/uc_float_spec.cpp',
+        'libuavcan/src/marshal/uc_scalar_codec.cpp',
+
+        -- Helpers
+
         -- Driver
         'libuavcan/src/driver/uc_can.cpp',
         -- Protocol
         'libuavcan/src/protocol/uc_dynamic_node_id_client.cpp',
         'libuavcan/src/protocol/uc_node_status_provider.cpp'
-
     },
-    cflags = {'-DUAVCAN_CPP_VERSION=UAVCAN_CPP11'},
+    -- cflags = {'-DUAVCAN_CPP_VERSION=UAVCAN_CPP11'},
+    cflags = {'-DUAVCAN_CPP_VERSION=UAVCAN_CPP11' }
 }
 
 uavcan_stm32_driver_pkg = {
@@ -243,7 +255,7 @@ uavcan_stm32_driver_pkg = {
         'src/uc_stm32_clock.cpp',
         'src/uc_stm32_thread.cpp'
     },
-    cflags = { '-DUAVCAN_STM32_NUM_IFACES=1', '-DUAVCAN_STM32_FREERTOS=1', '-DUAVCAN_STM32_BAREMETAL=0', '-DUAVCAN_STM32_TIMER_NUMBER=2' }
+    cflags = { '-DUAVCAN_STM32_NUM_IFACES=1', '-DUAVCAN_STM32_FREERTOS=1', '-DUAVCAN_STM32_TIMER_NUMBER=2' }
 }
 
 cmsis_pkg = {
@@ -476,8 +488,8 @@ add_pkg(stm32_usb_device_library_pkg)
 add_pkg(board)
 add_pkg(fibre_pkg)
 add_pkg(odrive_firmware_pkg)
-add_pkg(uavcan_stm32_driver_pkg)
 add_pkg(uavcan_pkg)
+add_pkg(uavcan_stm32_driver_pkg)
 
 
 for _, src_file in pairs(code_files) do

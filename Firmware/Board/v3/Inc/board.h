@@ -12,7 +12,7 @@
 #include <gpio.h>
 #include <spi.h>
 #include <tim.h>
-#include <can.h>
+// #include <can.h>
 #include <i2c.h>
 #include <usb_device.h>
 #include <main.h>
@@ -129,6 +129,26 @@ static const int current_meas_hz = CURRENT_MEAS_HZ;
 // to 3.0V so that it's symmetric around the center point of 1.65V.
 #define CURRENT_SENSE_MIN_VOLT  0.3f
 #define CURRENT_SENSE_MAX_VOLT  3.0f
+
+// Uavcan configs.
+#ifndef UAVCAN_NODE_POOL_SIZE
+#define UAVCAN_NODE_POOL_SIZE 8192
+#endif
+
+#ifndef UAVCAN_NODE_POOL_BLOCK_SIZE
+#define UAVCAN_NODE_POOL_BLOCK_SIZE 64
+#endif
+
+#ifndef UAVCAN_SRV_NUMBER
+#define UAVCAN_SRV_NUMBER 18
+#endif
+
+#define AP_UAVCAN_SW_VERS_MAJOR 1
+#define AP_UAVCAN_SW_VERS_MINOR 0
+
+#define AP_UAVCAN_HW_VERS_MAJOR 1
+#define AP_UAVCAN_HW_VERS_MINOR 0
+
 
 // This board has no board-specific user configurations
 static inline bool board_read_config() { return true; }

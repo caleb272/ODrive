@@ -9,6 +9,13 @@
 #include <communication/interface_i2c.h>
 #include <communication/interface_uart.h>
 #include <task_timer.hpp>
+
+#include <uavcan/uavcan.hpp>
+#include <uavcan/node/node.hpp>
+#include <uavcan/driver/can.hpp>
+#include <uavcan/driver/system_clock.hpp>
+#include <uavcan/helpers/heap_based_pool_allocator.hpp>
+
 extern "C" {
 #endif
 
@@ -227,6 +234,11 @@ public:
     };
 
     ODriveCAN can_;
+    class RaiiSynchronizer {};
+    uavcan::PoolAllocator<UAVCAN_NODE_POOL_BLOCK_SIZE, UAVCAN_NODE_POOL_BLOCK_SIZE, ODrive::RaiiSynchronizer> uavcanNodeAllocator;
+    uavcan::Node<0>* canNode;
+    // uavcan::ICanDriver* uavcanCANDriver;
+    // uavcan::ISystemClock* uavcanSysClock;
 
     BoardConfig_t config_;
     uint32_t user_config_loaded_ = 0;

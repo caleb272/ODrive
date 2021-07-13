@@ -1,7 +1,7 @@
 
 #include "can_uavcan.hpp"
 
-#include <uavcan/uavcan.hpp>
+// #include <uavcan/uavcan.hpp>
 #include <odrive_main.h>
 
 bool CANUavcan::init() {
@@ -15,7 +15,7 @@ bool CANUavcan::init() {
 }
 
 bool CANUavcan::renew_subscription(size_t i) {
-    if (node != nullptr) return false;
+    // if (node != nullptr) return false;
 
     // node = new uavcan::Node()
     Axis& axis = axes[i];

@@ -5,7 +5,7 @@
 
 #include "interface_usb.h"
 #include "interface_uart.h"
-#include "interface_can.hpp"
+// #include "interface_can.hpp"
 #include "interface_i2c.h"
 
 #include "odrive_main.h"
@@ -21,6 +21,11 @@
 
 #include <type_traits>
 
+#include <uavcan/uavcan.hpp>
+#include <uavcan/node/node.hpp>
+#include <uavcan/protocol/debug/KeyValue.hpp>
+#include <uavcan_stm32/uavcan_stm32.hpp>
+
 /* Private defines -----------------------------------------------------------*/
 /* Private macros ------------------------------------------------------------*/
 /* Private typedef -----------------------------------------------------------*/
@@ -29,6 +34,9 @@
 
 uint64_t serial_number;
 char serial_number_str[13]; // 12 digits + null termination
+
+static constexpr int RxQueueSize = 64;
+static constexpr std::uint32_t BitRate = 500000;
 
 /* Private constant data -----------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
@@ -55,9 +63,56 @@ void init_communication(void) {
         start_i2c_server();
     }
 
-    if (odrv.config_.enable_can_a) {
-        odrv.can_.start_server(&hcan1);
+    // TODO Caleb - Setup the can driver here.
+    static uavcan_stm32::CanInitHelper<RxQueueSize> can;
+    can.init(BitRate);
+
+    uavcan_stm32::SystemClock& sysClk = uavcan_stm32::SystemClock::instance();
+    uavcan::Node<0>* node = odrv.canNode = new uavcan::Node<0>(can.driver, sysClk, odrv.uavcanNodeAllocator);
+
+    node->setNodeID(10);    
+    node->setName("org.arkrobotics");
+    
+    uavcan::protocol::SoftwareVersion sw_version;  // Standard type uavcan.protocol.SoftwareVersion
+    sw_version.major = 1;
+    node->setSoftwareVersion(sw_version);
+
+    uavcan::protocol::HardwareVersion hw_version;  // Standard type uavcan.protocol.HardwareVersion
+    hw_version.major = 1;
+    node->setHardwareVersion(hw_version);
+
+    uavcan::Publisher<uavcan::protocol::debug::KeyValue> kvPub(*node);
+    kvPub.init();
+
+    kvPub.setTxTimeout(uavcan::MonotonicDuration::fromMSec(1000));
+    kvPub.setPriority(uavcan::TransferPriority::MiddleLower);
+
+    if (node->start() < 0) { /* TODO Caleb handle this error properly */ }
+    node->setModeOperational();
+
+    node->getLogger().setLevel(uavcan::protocol::debug::LogLevel::DEBUG);
+
+    // Start back here figure out what is needed to properly send the heartbeat and make sure the timings are correct for the baud rate.
+    while (true) {
+        if (node->spinOnce() < 0)
+            while (true) {}
+        // node->setHealthOk();
+
+        uavcan::protocol::debug::KeyValue message;
+        message.value = 100;
+        message.key = "caleb";
+    
+        if (kvPub.broadcast(message) < 0) {
+            while (true) {}
+        }
     }
+    
+    // throw std::runtime_error()
+    // node->spinOnce();
+    
+    // if (odrv.config_.enable_can_a) {
+    //     odrv.can_.start_server(&hcan1);
+    // }
 }
 
 #include <fibre/async_stream.hpp>

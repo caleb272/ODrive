@@ -1,8 +1,8 @@
 #ifndef __CAN_UAVCAN_HPP_
 #define __CAN_UAVCAN_HPP_
 
-#include <uavcan/uavcan.hpp>
-#include <uavcan/node/node.hpp>
+// #include <uavcan/uavcan.hpp>
+// #include <uavcan/node/node.hpp>
 #include "canbus.hpp"
 #include "axis.hpp"
 
@@ -44,7 +44,7 @@ class CANUavcan {
 
    private:
 
-    uavcan::Node<0>* node = nullptr;
+    // uavcan::Node<0>* node = nullptr;
     bool renew_subscription(size_t i);
     bool send_heartbeat(const Axis& axis);
 
