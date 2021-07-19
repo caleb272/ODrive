@@ -4,4 +4,4 @@
 	branch = submodule
 [submodule "Firmware/modules/uavcan"]
 	path = Firmware/modules/uavcan
-	url = https://github.com/ArduPilot/uavcan.git
+	url = https://github.com/caleb272/uavcan.git
