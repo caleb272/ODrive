@@ -244,7 +244,13 @@ uavcan_pkg = {
         'libuavcan/src/protocol/uc_node_status_provider.cpp'
     },
     -- cflags = {'-DUAVCAN_CPP_VERSION=UAVCAN_CPP11'},
-    cflags = {'-DUAVCAN_CPP_VERSION=UAVCAN_CPP11' }
+    cflags = {
+        '-DUAVCAN_CPP_VERSION=UAVCAN_CPP11', 
+        '-DUAVCAN_STM32_NUM_IFACES=1',
+        '-DUAVCAN_STM32_FREERTOS=1',
+        '-DUAVCAN_STM32_TIMER_NUMBER=2',
+        '-DUAVCAN_TINY=1'
+    }
 }
 
 uavcan_stm32_driver_pkg = {

@@ -37,6 +37,7 @@ char serial_number_str[13]; // 12 digits + null termination
 
 static constexpr int RxQueueSize = 64;
 static constexpr std::uint32_t BitRate = 500000;
+// static constexpr std::uint32_t BitRate = 500000; 
 
 /* Private constant data -----------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
@@ -63,9 +64,15 @@ void init_communication(void) {
         start_i2c_server();
     }
 
-    // TODO Caleb - Setup the can driver here.
+    static bool canInited = false;
     static uavcan_stm32::CanInitHelper<RxQueueSize> can;
-    can.init(BitRate);
+
+    if (!canInited) {
+        int res = can.init(BitRate);
+        if (res < 0)
+            while (true) {}
+        canInited = true;
+    }
 
     uavcan_stm32::SystemClock& sysClk = uavcan_stm32::SystemClock::instance();
     uavcan::Node<0>* node = odrv.canNode = new uavcan::Node<0>(can.driver, sysClk, odrv.uavcanNodeAllocator);
@@ -90,13 +97,13 @@ void init_communication(void) {
     if (node->start() < 0) { /* TODO Caleb handle this error properly */ }
     node->setModeOperational();
 
-    node->getLogger().setLevel(uavcan::protocol::debug::LogLevel::DEBUG);
+    // node->getLogger().setLevel(uavcan::protocol::debug::LogLevel::DEBUG);
+    node->setHealthOk();
 
     // Start back here figure out what is needed to properly send the heartbeat and make sure the timings are correct for the baud rate.
     while (true) {
         if (node->spinOnce() < 0)
             while (true) {}
-        // node->setHealthOk();
 
         uavcan::protocol::debug::KeyValue message;
         message.value = 100;
