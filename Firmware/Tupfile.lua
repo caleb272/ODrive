@@ -92,6 +92,7 @@ odrive_firmware_pkg = {
         'Drivers/STM32/stm32_gpio.cpp',
         'Drivers/STM32/stm32_nvm.c',
         'Drivers/STM32/stm32_spi_arbiter.cpp',
+        'communication/can/uavcan_manager.cpp',
         'communication/can/can_simple.cpp',
         'communication/can/can_uavcan.cpp',
         'communication/can/odrive_can.cpp',    

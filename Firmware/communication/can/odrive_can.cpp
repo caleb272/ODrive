@@ -12,17 +12,17 @@
 
 
 bool ODriveCAN::apply_config() {
-    config_.parent = this;
-    set_baud_rate(config_.baud_rate);
-    return true;
+    // config_.parent = this;
+    // set_baud_rate(config_.baud_rate);
+    // return true;
 }
 
 bool ODriveCAN::reinit() {
-    HAL_CAN_Stop(handle_);
-    HAL_CAN_ResetError(handle_);
-    return (HAL_CAN_Init(handle_) == HAL_OK)
-        && (HAL_CAN_Start(handle_) == HAL_OK)
-        && (HAL_CAN_ActivateNotification(handle_, CAN_IT_RX_FIFO0_MSG_PENDING | CAN_IT_RX_FIFO1_MSG_PENDING | CAN_IT_TX_MAILBOX_EMPTY) == HAL_OK);
+    // HAL_CAN_Stop(handle_);
+    // HAL_CAN_ResetError(handle_);
+    // return (HAL_CAN_Init(handle_) == HAL_OK)
+    //     && (HAL_CAN_Start(handle_) == HAL_OK)
+    //     && (HAL_CAN_ActivateNotification(handle_, CAN_IT_RX_FIFO0_MSG_PENDING | CAN_IT_RX_FIFO1_MSG_PENDING | CAN_IT_TX_MAILBOX_EMPTY) == HAL_OK);
 }
 
 bool ODriveCAN::start_server(CAN_HandleTypeDef* handle) {
