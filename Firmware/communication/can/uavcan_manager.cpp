@@ -1,4 +1,5 @@
 #include "uavcan_manager.hpp"
+#include "freertos_vars.h"
 
 uavcan_stm32::CanInitHelper<UavcanManager::RxQueueSize> UavcanManager::can;
 
@@ -58,5 +59,7 @@ void UavcanManager::uavcan_server_thread() {
         if (kvPub->broadcast(message) < 0) {
             while (true) {}
         }
+
+      	osSemaphoreWait(sem_can, 1UL);
     }
 }
