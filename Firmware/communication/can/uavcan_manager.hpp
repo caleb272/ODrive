@@ -29,11 +29,11 @@ class UavcanManager {
     		osThreadId threadId;
     		const uint32_t stack_size_ = 1024;  // Bytes
     		uavcan::PoolAllocator<UAVCAN_NODE_POOL_BLOCK_SIZE, UAVCAN_NODE_POOL_BLOCK_SIZE, UavcanManager::RaiiSynchronizer> uavcanNodeAllocator;
-    		uavcan::Node<0>* node;
+                uavcan::Node<16384>* node;
 
-		typedef uavcan::MethodBinder<
+                typedef uavcan::MethodBinder<
 			UavcanManager*,
-			void (UavcanManager::*)(const uavcan::equipment::actuator::ArrayCommand&) const> positionCommandBinder;
+			void (UavcanManager::*)(const uavcan::ReceivedDataStructure<uavcan::equipment::actuator::ArrayCommand>&) const> positionCommandBinder;
 
 		uavcan::Publisher<uavcan::protocol::debug::KeyValue>* kvPub;
 		uavcan::Subscriber<uavcan::equipment::actuator::ArrayCommand, positionCommandBinder>* positionCommandSub;
@@ -51,7 +51,7 @@ class UavcanManager {
                 void uavcan_server_thread();
 
 		// void handlePositionCommand(const uavcan::ReceivedDataStructure<uavcan::equipment::actuator::ArrayCommand>& command) const;
-		void handlePositionCommand(const uavcan::equipment::actuator::ArrayCommand& command) const;
+		void handlePositionCommand(const uavcan::ReceivedDataStructure<uavcan::equipment::actuator::ArrayCommand>& command) const;
 };
 
 #endif

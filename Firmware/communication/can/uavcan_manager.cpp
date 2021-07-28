@@ -15,30 +15,26 @@ bool UavcanManager::init() {
 	}
 
 	uavcan_stm32::SystemClock& sysClk = uavcan_stm32::SystemClock::instance();
-	node = new uavcan::Node<0>(can.driver, sysClk, uavcanNodeAllocator);
+	// node = new uavcan::Node<0>(can.driver, sysClk, uavcanNodeAllocator);
+        node = new uavcan::Node<16384>(can.driver, sysClk);
 
-	node->setNodeID(odrv.get_axis(0).config_.can.node_id);    
+        node->setNodeID(odrv.get_axis(0).config_.can.node_id);    
 	node->setName("org.arkrobotics.odrive");
 	
-	uavcan::protocol::SoftwareVersion sw_version;  // Standard type uavcan.protocol.SoftwareVersion
-	sw_version.major = 1;
-	node->setSoftwareVersion(sw_version);
-	uavcan::protocol::HardwareVersion hw_version;  // Standard type uavcan.protocol.HardwareVersion
-	hw_version.major = 1;
-	node->setHardwareVersion(hw_version);
+	// uavcan::protocol::SoftwareVersion sw_version;  // Standard type uavcan.protocol.SoftwareVersion
+	// sw_version.major = 1;
+	// node->setSoftwareVersion(sw_version);
+	// uavcan::protocol::HardwareVersion hw_version;  // Standard type uavcan.protocol.HardwareVersion
+	// hw_version.major = 1;
+	// node->setHardwareVersion(hw_version);
 
-	kvPub = new uavcan::Publisher<uavcan::protocol::debug::KeyValue>(*node);
-	kvPub->init();
-	kvPub->setTxTimeout(uavcan::MonotonicDuration::fromMSec(1000));
-	kvPub->setPriority(uavcan::TransferPriority::MiddleLower);
+	// kvPub = new uavcan::Publisher<uavcan::protocol::debug::KeyValue>(*node);
+	// kvPub->init();
+	// kvPub->setTxTimeout(uavcan::MonotonicDuration::fromMSec(1000));
+	// kvPub->setPriority(uavcan::TransferPriority::MiddleLower);
 
 	// positionCommandSub = new uavcan::Subscriber<uavcan::equipment::actuator::ArrayCommand>(*node);
 	positionCommandSub = new uavcan::Subscriber<uavcan::equipment::actuator::ArrayCommand, positionCommandBinder>(*node);
-
-	// positionCommandSub->start([&](const uavcan::ReceivedDataStructure<uavcan::equipment::actuator::Command>& message) {
-	// 	odrv.get_axis(0).controller_.input_pos_ = message.command_value;
-	// 	odrv.get_axis(0).controller_.input_pos_updated();
-	// });
 
 	if (node->start() < 0) { /* TODO Caleb handle this error properly */ }
 
@@ -51,37 +47,37 @@ bool UavcanManager::init() {
 }
 
 void UavcanManager::start() {
-	auto wrapper = [](void* ctx) {
-	    ((UavcanManager*)ctx)->uavcan_server_thread();
-	};
+	// auto wrapper = [](void* ctx) {
+	//     ((UavcanManager*)ctx)->uavcan_server_thread();
+	// };
 
-	osThreadDef(can_server_thread_def, wrapper, osPriorityNormal, 0, stack_size_ / sizeof(StackType_t));
- 	threadId = osThreadCreate(osThread(can_server_thread_def), this);
+	// osThreadDef(can_server_thread_def, wrapper, osPriorityNormal, 0, stack_size_ / sizeof(StackType_t));
+ 	// threadId = osThreadCreate(osThread(can_server_thread_def), this);
 	
     	node->setHealthOk();
 	isStarted = true;
+	uavcan_server_thread();
 }
 
 void UavcanManager::uavcan_server_thread() {
     // Start back here figure out what is needed to properly send the heartbeat and make sure the timings are correct for the baud rate.
-    while (true) {
-        if (node->spinOnce() < 0) {
-            while (true) {}
+//     while (true) {
+//         if (node->spinOnce() < 0) {
+//             while (true) {}
+// 	}
+
+    //       	osSemaphoreWait(sem_can, 10UL);
+    //     }
+	while (true) {
+		if (node->spinOnce() < 0) {
+			while (true) {}
+		}
+		// osSemaphoreWait(sem_can, 10UL);
 	}
-
-        // uavcan::protocol::debug::KeyValue message;
-        // message.value = 100;
-        // message.key = "caleb";
-    
-        // if (kvPub->broadcast(message) < 0) {
-        //     while (true) {}
-        // }
-
-      	osSemaphoreWait(sem_can, 1UL);
-    }
 }
 
-void UavcanManager::handlePositionCommand(const uavcan::equipment::actuator::ArrayCommand& command) const {
+void UavcanManager::handlePositionCommand(const uavcan::ReceivedDataStructure<uavcan::equipment::actuator::ArrayCommand>& command) const {
 	int i = command.commands.size();
-	while (true) {}
+	if (command.commands[0].actuator_id == 1)
+		i = 100;
 }

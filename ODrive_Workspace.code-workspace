@@ -101,7 +101,8 @@
 			"readerwriter": "cpp",
 			"charconv": "cpp",
 			"image": "cpp",
-			"imageutils": "cpp"
+			"imageutils": "cpp",
+			"*.ipp": "cpp"
 		}
 	}
 }
