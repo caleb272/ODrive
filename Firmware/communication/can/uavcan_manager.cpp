@@ -16,24 +16,16 @@ bool UavcanManager::init() {
 
 	uavcan_stm32::SystemClock& sysClk = uavcan_stm32::SystemClock::instance();
 	// node = new uavcan::Node<0>(can.driver, sysClk, uavcanNodeAllocator);
-        node = new uavcan::Node<16384>(can.driver, sysClk);
+        node = new uavcan::Node<NODE_MEMORY_ALLOC>(can.driver, sysClk);
 
         node->setNodeID(odrv.get_axis(0).config_.can.node_id);    
 	node->setName("org.arkrobotics.odrive");
 	
-	// uavcan::protocol::SoftwareVersion sw_version;  // Standard type uavcan.protocol.SoftwareVersion
-	// sw_version.major = 1;
-	// node->setSoftwareVersion(sw_version);
-	// uavcan::protocol::HardwareVersion hw_version;  // Standard type uavcan.protocol.HardwareVersion
-	// hw_version.major = 1;
-	// node->setHardwareVersion(hw_version);
-
 	// kvPub = new uavcan::Publisher<uavcan::protocol::debug::KeyValue>(*node);
 	// kvPub->init();
 	// kvPub->setTxTimeout(uavcan::MonotonicDuration::fromMSec(1000));
 	// kvPub->setPriority(uavcan::TransferPriority::MiddleLower);
 
-	// positionCommandSub = new uavcan::Subscriber<uavcan::equipment::actuator::ArrayCommand>(*node);
 	positionCommandSub = new uavcan::Subscriber<uavcan::equipment::actuator::ArrayCommand, positionCommandBinder>(*node);
 
 	if (node->start() < 0) { /* TODO Caleb handle this error properly */ }

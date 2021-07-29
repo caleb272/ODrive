@@ -19,6 +19,8 @@
 #include <cmsis_os.h>
 #include <board.h>
 
+#define NODE_MEMORY_ALLOC 16384
+
 class UavcanManager {
 	public:
 		bool init();
