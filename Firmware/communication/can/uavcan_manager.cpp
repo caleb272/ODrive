@@ -47,33 +47,25 @@ bool UavcanManager::init() {
 }
 
 void UavcanManager::start() {
-	// auto wrapper = [](void* ctx) {
-	//     ((UavcanManager*)ctx)->uavcan_server_thread();
-	// };
+	auto wrapper = [](void* ctx) {
+	    ((UavcanManager*)ctx)->uavcan_server_thread();
+	};
 
-	// osThreadDef(can_server_thread_def, wrapper, osPriorityNormal, 0, stack_size_ / sizeof(StackType_t));
- 	// threadId = osThreadCreate(osThread(can_server_thread_def), this);
+	osThreadDef(can_server_thread_def, wrapper, osPriorityNormal, 0, stack_size_ / sizeof(StackType_t));
+ 	threadId = osThreadCreate(osThread(can_server_thread_def), this);
 	
     	node->setHealthOk();
 	isStarted = true;
-	uavcan_server_thread();
 }
 
 void UavcanManager::uavcan_server_thread() {
-    // Start back here figure out what is needed to properly send the heartbeat and make sure the timings are correct for the baud rate.
-//     while (true) {
-//         if (node->spinOnce() < 0) {
-//             while (true) {}
-// 	}
-
-    //       	osSemaphoreWait(sem_can, 10UL);
-    //     }
-	while (true) {
-		if (node->spinOnce() < 0) {
-			while (true) {}
-		}
-		// osSemaphoreWait(sem_can, 10UL);
+    while (true) {
+        if (node->spinOnce() < 0) {
+            while (true) {}
 	}
+
+          osSemaphoreWait(sem_can, 1UL);
+        }
 }
 
 void UavcanManager::handlePositionCommand(const uavcan::ReceivedDataStructure<uavcan::equipment::actuator::ArrayCommand>& command) const {
