@@ -6,6 +6,11 @@
 
 uavcan_stm32::CanInitHelper<UavcanManager::RxQueueSize> UavcanManager::can;
 
+UavcanManager::~UavcanManager() {
+	for (auto i : nodes)
+		delete i;
+}
+
 bool UavcanManager::init() {
 	if (!isInited) {
 		int res = can.init(UavcanManager::BitRate);
@@ -15,26 +20,10 @@ bool UavcanManager::init() {
 	}
 
 	uavcan_stm32::SystemClock& sysClk = uavcan_stm32::SystemClock::instance();
-	// node = new uavcan::Node<0>(can.driver, sysClk, uavcanNodeAllocator);
-        node = new uavcan::Node<NODE_MEMORY_ALLOC>(can.driver, sysClk);
 
-        node->setNodeID(odrv.get_axis(0).config_.can.node_id);    
-	node->setName("org.arkrobotics.odrive");
-	
-	// kvPub = new uavcan::Publisher<uavcan::protocol::debug::KeyValue>(*node);
-	// kvPub->init();
-	// kvPub->setTxTimeout(uavcan::MonotonicDuration::fromMSec(1000));
-	// kvPub->setPriority(uavcan::TransferPriority::MiddleLower);
-
-	positionCommandSub = new uavcan::Subscriber<uavcan::equipment::actuator::ArrayCommand, positionCommandBinder>(*node);
-
-	if (node->start() < 0) { /* TODO Caleb handle this error properly */ }
-
-	const int posStartErr = positionCommandSub->start(positionCommandBinder(this, &UavcanManager::handlePositionCommand));
-	if (posStartErr < 0)
-		while (true) {}
-	node->setModeOperational();
-
+	for (int i = 0; i < AXIS_COUNT; ++i)
+		nodes[i] = new UavcanAxisNode(odrv.get_axis(i).config_.can.node_id, "org.arkrobotics.odrive.axis" + i, &can, &sysClk); 
+		
 	return true;
 }
 
@@ -45,23 +34,18 @@ void UavcanManager::start() {
 
 	osThreadDef(can_server_thread_def, wrapper, osPriorityNormal, 0, stack_size_ / sizeof(StackType_t));
  	threadId = osThreadCreate(osThread(can_server_thread_def), this);
+
+	 for (int i = 0; i < AXIS_COUNT; ++i)
+		 nodes[i]->start();
 	
-    	node->setHealthOk();
 	isStarted = true;
 }
 
 void UavcanManager::uavcan_server_thread() {
-    while (true) {
-        if (node->spinOnce() < 0) {
-            while (true) {}
-	}
+	while (true) {
+		for (int i = 0; i < AXIS_COUNT; ++i)
+			nodes[i]->spin();
 
           osSemaphoreWait(sem_can, 1UL);
         }
-}
-
-void UavcanManager::handlePositionCommand(const uavcan::ReceivedDataStructure<uavcan::equipment::actuator::ArrayCommand>& command) const {
-	int i = command.commands.size();
-	if (command.commands[0].actuator_id == 1)
-		i = 100;
 }

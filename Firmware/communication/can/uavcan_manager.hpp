@@ -19,6 +19,8 @@
 #include <cmsis_os.h>
 #include <board.h>
 
+#include "uavcan_axis_node.hpp"
+
 #define NODE_MEMORY_ALLOC 16384
 
 class UavcanManager {
@@ -26,19 +28,12 @@ class UavcanManager {
 		bool init();
 		void start();
 
+		~UavcanManager();
     		class RaiiSynchronizer {};
 	private:
     		osThreadId threadId;
     		const uint32_t stack_size_ = 1024;  // Bytes
-    		uavcan::PoolAllocator<UAVCAN_NODE_POOL_BLOCK_SIZE, UAVCAN_NODE_POOL_BLOCK_SIZE, UavcanManager::RaiiSynchronizer> uavcanNodeAllocator;
-                uavcan::Node<16384>* node;
-
-                typedef uavcan::MethodBinder<
-			UavcanManager*,
-			void (UavcanManager::*)(const uavcan::ReceivedDataStructure<uavcan::equipment::actuator::ArrayCommand>&) const> positionCommandBinder;
-
-		uavcan::Publisher<uavcan::protocol::debug::KeyValue>* kvPub;
-		uavcan::Subscriber<uavcan::equipment::actuator::ArrayCommand, positionCommandBinder>* positionCommandSub;
+		UavcanAxisNode* nodes[AXIS_COUNT];
 
 		bool isInited = false;
 		bool isStarted = false;
@@ -51,9 +46,6 @@ class UavcanManager {
     		static uavcan::ISystemClock& uavcanSysClock;
 
                 void uavcan_server_thread();
-
-		// void handlePositionCommand(const uavcan::ReceivedDataStructure<uavcan::equipment::actuator::ArrayCommand>& command) const;
-		void handlePositionCommand(const uavcan::ReceivedDataStructure<uavcan::equipment::actuator::ArrayCommand>& command) const;
 };
 
 #endif

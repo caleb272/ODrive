@@ -340,7 +340,7 @@ uint32_t CANSimple::service_stack() {
             renew_subscription(i);
         }
     }
-
+// 
     for (auto& a: axes) {
         MEASURE_TIME(a.task_times_.can_heartbeat) {
             if (a.config_.can.heartbeat_rate_ms > 0) {
