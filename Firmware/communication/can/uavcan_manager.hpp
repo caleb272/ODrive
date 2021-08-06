@@ -32,7 +32,8 @@ class UavcanManager {
     		class RaiiSynchronizer {};
 	private:
     		osThreadId threadId;
-    		const uint32_t stack_size_ = 1024;  // Bytes
+    		// const uint32_t stack_size_ = 1024;  // Bytes
+    		const uint32_t stack_size_ = 2048;  // Bytes
 		UavcanAxisNode* nodes[AXIS_COUNT];
 
 		bool isInited = false;

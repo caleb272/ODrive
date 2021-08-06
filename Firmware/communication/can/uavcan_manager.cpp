@@ -46,6 +46,6 @@ void UavcanManager::uavcan_server_thread() {
 		for (int i = 0; i < AXIS_COUNT; ++i)
 			nodes[i]->spin();
 
-          osSemaphoreWait(sem_can, 1UL);
+          osSemaphoreWait(sem_can, 10UL);
         }
 }

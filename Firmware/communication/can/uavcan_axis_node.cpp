@@ -11,10 +11,18 @@ UavcanAxisNode::UavcanAxisNode(
 ) : nodeId(static_cast<int>(id.get())), node(can->driver, *uavcanSysClock) {
 	node.setNodeID(id);
 	node.setName(nodeName.c_str());
+
+	positionCommandSub = new uavcan::Subscriber<uavcan::equipment::actuator::ArrayCommand, positionCommandBinder>(node);
+}
+
+UavcanAxisNode::~UavcanAxisNode() {
+	delete positionCommandSub;
 }
 
 void UavcanAxisNode::start() {
 	node.start();
+	positionCommandSub->start(positionCommandBinder(this, &UavcanAxisNode::handlePositionCommand));
+
 	node.setHealthOk();
 	node.setModeOperational();
 }

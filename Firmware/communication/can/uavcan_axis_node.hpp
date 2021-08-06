@@ -9,7 +9,8 @@
 
 #include <board.h>
 
-#define NODE_MEMORY_ALLOC 16384
+// #define NODE_MEMORY_ALLOC 16384
+#define NODE_MEMORY_ALLOC 2048
 
 class UavcanAxisNode {
 	public:
@@ -20,6 +21,7 @@ class UavcanAxisNode {
 			const std::string& nodeName,
 			uavcan_stm32::CanInitHelper<RxQueueSize> * can,
 	    		uavcan::ISystemClock* uavcanSysClock);
+		~UavcanAxisNode();
 		void start();
 		void spin();
 	
