@@ -2,6 +2,9 @@
 
 This directory provides the C++ reference implementation of [Fibre](https://github.com/samuelsadok/fibre). Its home is located [here](https://github.com/samuelsadok/fibre/tree/master/cpp). There's also a standalone repository for this directory [here](https://github.com/samuelsadok/fibre-cpp).
 
+# Uavcan
+you need to compile and install the uavcan drivers and modules from the `modules/uavcan` directory
+
 ## Overview
 
 There are two approaches to include Fibre in your project:
